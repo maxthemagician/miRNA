@@ -230,3 +230,13 @@ mastertable$mature_3p_G <- str_count(mastertable$`3p_mat_seq`, "G")/stri_length(
 mastertable$mature_3p_U <- str_count(mastertable$`3p_mat_seq`, "U")/stri_length(mastertable$`3p_mat_seq`)
 
 write.csv(mastertable, paste0(outputfile,"mastertable_ACGU.csv"))
+dfm <- melt(mastertable, id.vars=c("version", "species"),measure.vars=colnames(mastertable)[16:19])
+dfm['DBversions'] = cut(as.numeric(as.character(dfm$version)),breaks = c(0,7,16,19,22))
+colnames(dfm)[3] = "Nucleotide"
+colnames(dfm)[4] = "Percentage"
+
+for (s in unique(dfm$species)){
+  p = ggplot(subset(dfm,species == s)) + geom_boxplot(aes(y=Percentage,fill=Nucleotide,x=DBversions))+ggtitle(s)
+  ggsave(p,file = paste(s,"nulecotidePercentages.pdf",sep='_'))
+}
+
